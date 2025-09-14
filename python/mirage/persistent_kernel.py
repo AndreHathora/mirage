@@ -141,7 +141,7 @@ def get_compile_command(
         "-o",
         py_so_path,
     ]
-    flags = flags + [f"-DMPK_TARGET_CC={target_cc}"]
+    flags = flags + [f"-DMPK_TARGET_CC={target_cc}", "-DMIRAGE_BACKEND_USE_CUDA"]
 
     if use_nvshmem:
         nvshmem_cmd = [
@@ -158,11 +158,14 @@ def get_compile_command(
         specific_cmd = [
             "-arch=sm_90a",
             "-gencode=arch=compute_90a,code=sm_90a",
-        ] + (["-DMIRAGE_ENABLE_PROFILER"] if profiling else [])
+        ]
     else:
         specific_cmd = [
             "-arch=native",
         ]
+
+    if profiling:
+        flags = flags + ["-DMPK_ENABLE_PROFILING"]
 
     return common_cmd + specific_cmd + flags
 
